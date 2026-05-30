@@ -360,20 +360,15 @@ def summarize_tracker_data():
 
 
 def get_gemini_api_key():
-    """Resolve the Gemini API key from secrets, environment, or a user-entered value."""
+    """Resolve the Gemini API key from Streamlit secrets or the environment."""
     import os
     # 1. Streamlit secrets (.streamlit/secrets.toml)
     try:
-        if "GEMINI_API_KEY" in st.secrets:
-            return st.secrets["GEMINI_API_KEY"]
+        return st.secrets["GEMINI_API_KEY"]
     except Exception:
         pass
-    # 2. Environment variables
-    for var in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
-        if os.environ.get(var):
-            return os.environ[var]
-    # 3. Session-entered key
-    return st.session_state.get("gemini_api_key", "")
+    # 2. Environment variable
+    return os.environ.get("GEMINI_API_KEY", "")
 
 
 def call_gemini(api_key, history, data_summary):
@@ -419,17 +414,10 @@ def render_assistant():
     # --- API key handling --------------------------------------------------
     api_key = get_gemini_api_key()
     if not api_key:
-        st.warning("A Google Gemini API key is required to use the assistant.")
-        with st.expander("🔑 Enter your Gemini API key", expanded=True):
-            st.markdown(
-                "Get a free key at [Google AI Studio](https://aistudio.google.com/app/apikey). "
-                "You can also set it as an environment variable `GEMINI_API_KEY` or in "
-                "`.streamlit/secrets.toml`."
-            )
-            entered = st.text_input("Gemini API key", type="password", key="gemini_api_key_input")
-            if entered:
-                st.session_state.gemini_api_key = entered
-                st.rerun()
+        st.warning(
+            "A Google Gemini API key is required to use this chat assistant. "
+            "Set `GEMINI_API_KEY` in `.streamlit/secrets.toml` or as an environment variable."
+        )
         return
 
     # --- Chat state --------------------------------------------------------
