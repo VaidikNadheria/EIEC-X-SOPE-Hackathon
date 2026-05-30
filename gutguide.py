@@ -17,20 +17,48 @@ if 'tracker_data' not in st.session_state:
         'Pain_Scale': [8, 3, 9, 2, 4]
     })
 
-# 2. Sidebar Layout for Data Entry (Inputs)
+# Updated Sidebar Layout for Data Entry (Inputs)
 st.sidebar.header("📥 Log Today's Metrics")
 with st.sidebar.form(key='log_form', clear_on_submit=True):
     log_date = st.date_input("Date", datetime.date.today())
+    
+    # Existing metrics
     water = st.number_input("Water Intake (Ounces)", min_value=0, max_value=200, value=64)
     steps = st.number_input("Steps Per Day", min_value=0, max_value=50000, value=5000, step=500)
     pain = st.slider("Pain/Discomfort Level (1-10)", min_value=1, max_value=10, value=5)
     
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("New GI & Activity Metrics")
+    
+    # 1. Bleeding Level (Categorical Mapping)
+    bleeding = st.select_slider(
+        "Bleeding Level",
+        options=["None", "Mild (Spotting)", "Moderate", "Severe"],
+        value="None"
+    )
+    
+    # 2. Time Spent on Toilet (Minutes)
+    toilet_time = st.slider("Time on Toilet (Minutes)", min_value=0, max_value=60, value=5)
+    
+    # 3. Exercise Type
+    exercise_type = st.selectbox(
+        "Primary Exercise Today",
+        options=["None", "Walking", "Running/Cardio", "Yoga/Stretching", "Heavy Weightlifting", "Other"]
+    )
+    
     submit_button = st.form_submit_button(label='Submit Entry')
 
-# Handle form submission to update our data
+# Handle form submission to update your data structure
 if submit_button:
-    new_entry = pd.DataFrame({'Date': [log_date], 'Water_Oz': [water], 'Steps': [steps], 'Pain_Scale': [pain]})
-    # Append data and reset index
+    new_entry = pd.DataFrame({
+        'Date': [log_date], 
+        'Water_Oz': [water], 
+        'Steps': [steps], 
+        'Pain_Scale': [pain],
+        'Bleeding': [bleeding],
+        'Toilet_Min': [toilet_time],
+        'Exercise': [exercise_type]
+    })
     st.session_state.tracker_data = pd.concat([st.session_state.tracker_data, new_entry], ignore_index=True)
     st.success("Metrics logged successfully!")
 
