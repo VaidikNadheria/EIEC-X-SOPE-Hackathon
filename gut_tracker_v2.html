@@ -1,0 +1,223 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.app { max-width: 420px; margin: 0 auto; padding: 1rem; }
+.tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+.tab { flex: 1; padding: 8px; font-size: 13px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; text-align: center; }
+.tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); }
+.section { margin-bottom: 1.25rem; }
+.section-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.bss-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.bss-btn { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 8px 4px; text-align: center; cursor: pointer; background: var(--color-background-primary); }
+.bss-btn.selected { border-color: #185FA5; background: #E6F1FB; }
+.bss-btn .num { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.bss-btn .desc { font-size: 10px; color: var(--color-text-secondary); margin-top: 2px; }
+.scale-row { display: flex; gap: 6px; }
+.scale-btn { flex: 1; padding: 8px 4px; font-size: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; background: var(--color-background-primary); color: var(--color-text-secondary); text-align: center; }
+.scale-btn.selected-none { border-color: #0F6E56; background: #E1F5EE; color: #085041; }
+.scale-btn.selected-mild { border-color: #BA7517; background: #FAEEDA; color: #633806; }
+.scale-btn.selected-moderate { border-color: #D85A30; background: #FAECE7; color: #4A1B0C; }
+.scale-btn.selected-severe { border-color: #A32D2D; background: #FCEBEB; color: #501313; }
+.scale-btn.selected-spotting { border-color: #BA7517; background: #FAEEDA; color: #633806; }
+.scale-btn.selected-moderate-bleed { border-color: #D85A30; background: #FAECE7; color: #4A1B0C; }
+.scale-btn.selected-heavy { border-color: #A32D2D; background: #FCEBEB; color: #501313; }
+.add-btn { width: 100%; padding: 10px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); font-size: 14px; color: var(--color-text-primary); cursor: pointer; margin-top: 1rem; }
+.add-btn:hover { background: var(--color-background-secondary); }
+.movement-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 12px 1rem; margin-bottom: 8px; }
+.movement-card .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.movement-card .time-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.movement-card .del-btn { font-size: 12px; color: var(--color-text-secondary); cursor: pointer; background: none; border: none; }
+.movement-card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); }
+.tag.warn { border-color: #D85A30; background: #FAECE7; color: #4A1B0C; }
+.tag.danger { border-color: #A32D2D; background: #FCEBEB; color: #501313; }
+.tag.ok { border-color: #0F6E56; background: #E1F5EE; color: #085041; }
+.streak-row { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+.streak-dot { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--color-text-secondary); }
+.streak-dot.filled { background: #E1F5EE; border-color: #0F6E56; }
+.insight-card { background: #E6F1FB; border: 0.5px solid #B5D4F4; border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.insight-card .insight-title { font-size: 13px; font-weight: 500; color: #0C447C; margin-bottom: 4px; }
+.insight-card .insight-body { font-size: 13px; color: #185FA5; }
+.chart-bar-row { display: flex; align-items: flex-end; gap: 4px; height: 80px; margin-bottom: 4px; }
+.bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; justify-content: flex-end; }
+.bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; }
+.bar.strain { background: #5DCAA5; }
+.bar.bleed { background: #F0997B; }
+.bar-label { font-size: 10px; color: var(--color-text-secondary); margin-top: 4px; }
+.chart-legend { display: flex; gap: 12px; margin-bottom: 1.25rem; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-text-secondary); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--color-text-secondary); font-size: 14px; }
+.page { display: none; }
+.page.active { display: block; }
+.form-section { margin-bottom: 1.25rem; }
+</style>
+
+<div class="app">
+  <h2 class="sr-only">Gut symptom tracker for chronic constipation and hemorrhoids</h2>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('log')">Today's log</div>
+    <div class="tab" onclick="switchTab('new')">+ add movement</div>
+    <div class="tab" onclick="switchTab('trends')">Trends</div>
+  </div>
+
+  <div id="page-log" class="page active">
+    <div class="streak-row" id="streak-row"></div>
+    <div id="movements-list"></div>
+    <div id="empty-log" class="empty-state" style="display:none;">No movements logged today.<br>Tap "Add movement" to start.</div>
+  </div>
+
+  <div id="page-new" class="page">
+    <div class="card">
+      <div class="form-section">
+        <div class="section-label">Stool type (Bristol scale)</div>
+        <div class="bss-grid" id="bss-grid"></div>
+      </div>
+      <div class="form-section">
+        <div class="section-label">Straining effort</div>
+        <div class="scale-row" id="strain-row"></div>
+      </div>
+      <div class="form-section">
+        <div class="section-label">Pain level</div>
+        <div class="scale-row" id="pain-row"></div>
+      </div>
+      <div class="form-section">
+        <div class="section-label">Bleeding</div>
+        <div class="scale-row" id="bleed-row"></div>
+      </div>
+      <button class="add-btn" onclick="saveMovement()"><i class="ti ti-check" aria-hidden="true"></i> Save this movement</button>
+    </div>
+  </div>
+
+  <div id="page-trends" class="page">
+    <div class="insight-card">
+      <div class="insight-title"><i class="ti ti-bulb" aria-hidden="true"></i> Pattern noticed</div>
+      <div class="insight-body">Straining tends to be higher on days with fewer logged movements. Keep logging to refine this.</div>
+    </div>
+    <div class="section-label" style="margin-bottom:8px;">Last 7 days — straining vs bleeding</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#5DCAA5"></div> Straining avg</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#F0997B"></div> Bleeding avg</div>
+    </div>
+    <div class="chart-bar-row" id="trend-chart"></div>
+    <div style="display:flex; gap:4px; margin-bottom:1.5rem;" id="trend-labels"></div>
+    <div class="section-label" style="margin-bottom:8px;">Movement count — last 7 days</div>
+    <div class="chart-bar-row" id="count-chart"></div>
+    <div style="display:flex; gap:4px; margin-bottom:1rem;" id="count-labels"></div>
+  </div>
+</div>
+
+<script>
+const bssTypes = [
+  {n:1,desc:"Hard lumps"},
+  {n:2,desc:"Lumpy sausage"},
+  {n:3,desc:"Cracked surface"},
+  {n:4,desc:"Smooth sausage"},
+  {n:5,desc:"Soft blobs"},
+  {n:6,desc:"Fluffy pieces"},
+  {n:7,desc:"Watery"}
+];
+const strainLevels = ["None","Mild","Moderate","Severe"];
+const painLevels = ["None","Mild","Moderate","Severe"];
+const bleedLevels = ["None","Spotting","Moderate","Heavy"];
+
+let state = { bss: null, strain: null, pain: null, bleed: null };
+let movements = JSON.parse(localStorage.getItem('gut_movements') || '[]');
+
+function save() { try { localStorage.setItem('gut_movements', JSON.stringify(movements)); } catch(e){} }
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['log','new','trends'][i]===tab));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  if (tab==='log') renderLog();
+  if (tab==='trends') renderTrends();
+  if (tab==='new') renderForm();
+}
+
+function renderForm() {
+  const grid = document.getElementById('bss-grid');
+  grid.innerHTML = bssTypes.map(t => `<div class="bss-btn${state.bss===t.n?' selected':''}" onclick="sel('bss',${t.n})"><div class="num">${t.n}</div><div class="desc">${t.desc}</div></div>`).join('');
+  renderScale('strain-row', strainLevels, 'strain', ['selected-none','selected-mild','selected-moderate','selected-severe']);
+  renderScale('pain-row', painLevels, 'pain', ['selected-none','selected-mild','selected-moderate','selected-severe']);
+  renderScale('bleed-row', bleedLevels, 'bleed', ['selected-none','selected-spotting','selected-moderate-bleed','selected-heavy']);
+}
+
+function renderScale(id, labels, key, classes) {
+  document.getElementById(id).innerHTML = labels.map((l,i) => `<div class="scale-btn${state[key]===i?' '+classes[i]:''}" onclick="sel('${key}',${i})">${l}</div>`).join('');
+}
+
+function sel(key, val) { state[key]=val; renderForm(); }
+
+function saveMovement() {
+  if (state.bss===null || state.strain===null || state.pain===null || state.bleed===null) {
+    alert('Please fill in all fields before saving.'); return;
+  }
+  const now = new Date();
+  movements.push({ time: now.toISOString(), bss: state.bss, strain: state.strain, pain: state.pain, bleed: state.bleed });
+  save();
+  state = { bss: null, strain: null, pain: null, bleed: null };
+  switchTab('log');
+}
+
+function renderLog() {
+  const today = new Date().toDateString();
+  const todayMs = movements.filter(m => new Date(m.time).toDateString()===today);
+  const list = document.getElementById('movements-list');
+  const empty = document.getElementById('empty-log');
+  if (todayMs.length===0) { list.innerHTML=''; empty.style.display='block'; } else { empty.style.display='none'; }
+  list.innerHTML = todayMs.map((m,i) => {
+    const t = new Date(m.time);
+    const tStr = t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const bleedTag = m.bleed===0 ? `<span class="tag ok">No bleeding</span>` : m.bleed===1 ? `<span class="tag warn">Spotting</span>` : m.bleed===2 ? `<span class="tag warn">Moderate bleeding</span>` : `<span class="tag danger">Heavy bleeding</span>`;
+    const painTag = m.pain===0 ? `<span class="tag ok">No pain</span>` : m.pain===1 ? `<span class="tag">Mild pain</span>` : m.pain===2 ? `<span class="tag warn">Moderate pain</span>` : `<span class="tag danger">Severe pain</span>`;
+    const strainTag = m.strain===0 ? '' : m.strain===1 ? `<span class="tag">Mild straining</span>` : m.strain===2 ? `<span class="tag warn">Moderate straining</span>` : `<span class="tag danger">Severe straining</span>`;
+    return `<div class="movement-card"><div class="meta"><span class="time-label">Movement ${i+1} · ${tStr}</span><button class="del-btn" onclick="deleteMovement(${movements.indexOf(m)})">Remove</button></div><div class="tags"><span class="tag">Bristol ${m.bss}</span>${strainTag}${painTag}${bleedTag}</div></div>`;
+  }).join('');
+  renderStreak();
+}
+
+function deleteMovement(idx) { movements.splice(idx,1); save(); renderLog(); }
+
+function renderStreak() {
+  const row = document.getElementById('streak-row');
+  const days = [];
+  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
+  row.innerHTML = days.map(d => {
+    const ds = d.toDateString();
+    const has = movements.some(m => new Date(m.time).toDateString()===ds);
+    const label = ['S','M','T','W','T','F','S'][d.getDay()];
+    return `<div class="streak-dot${has?' filled':''}"><span>${label}</span></div>`;
+  }).join('');
+}
+
+function renderTrends() {
+  const days = [];
+  for (let i=6;i>=0;i--) { const d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
+  const labels = days.map(d => ['S','M','T','W','T','F','S'][d.getDay()]);
+  const strainData = days.map(d => {
+    const ms = movements.filter(m => new Date(m.time).toDateString()===d.toDateString());
+    if (!ms.length) return 0;
+    return ms.reduce((a,m)=>a+m.strain,0)/ms.length;
+  });
+  const bleedData = days.map(d => {
+    const ms = movements.filter(m => new Date(m.time).toDateString()===d.toDateString());
+    if (!ms.length) return 0;
+    return ms.reduce((a,m)=>a+m.bleed,0)/ms.length;
+  });
+  const countData = days.map(d => movements.filter(m => new Date(m.time).toDateString()===d.toDateString()).length);
+  const maxSB = Math.max(...strainData,...bleedData,1);
+  const maxC = Math.max(...countData,1);
+
+  document.getElementById('trend-chart').innerHTML = days.map((_,i) => `<div class="bar-col"><div class="bar strain" style="height:${Math.round((strainData[i]/maxSB)*70)}px"></div></div><div class="bar-col"><div class="bar bleed" style="height:${Math.round((bleedData[i]/maxSB)*70)}px"></div></div>`).join('');
+  document.getElementById('trend-labels').innerHTML = labels.map(l => `<div class="bar-label" style="flex:1;text-align:center;font-size:10px;color:var(--color-text-secondary)">${l}</div><div style="flex:1"></div>`).join('');
+  document.getElementById('count-chart').innerHTML = countData.map(c => `<div class="bar-col"><div class="bar strain" style="height:${Math.round((c/maxC)*70)}px;background:#AFA9EC"></div></div>`).join('');
+  document.getElementById('count-labels').innerHTML = labels.map(l => `<div class="bar-label" style="flex:1;text-align:center;font-size:10px;color:var(--color-text-secondary)">${l}</div>`).join('');
+}
+
+renderLog();
+renderStreak();
+</script>

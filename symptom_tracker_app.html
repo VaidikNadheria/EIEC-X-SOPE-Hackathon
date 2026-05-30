@@ -1,0 +1,306 @@
+
+<style>
+  .tracker { font-family: var(--font-sans); max-width: 680px; }
+  .tab-bar { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+  .tab { padding: 8px 18px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); font-size: 14px; cursor: pointer; }
+  .tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .section-label { font-size: 12px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin: 1.25rem 0 0.5rem; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .scale-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .scale-btn { width: 40px; height: 40px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 14px; cursor: pointer; color: var(--color-text-primary); }
+  .scale-btn.selected { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); font-weight: 500; }
+  .stool-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .stool-btn { padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; cursor: pointer; color: var(--color-text-primary); }
+  .stool-btn.selected { background: var(--color-background-success); border-color: var(--color-border-success); color: var(--color-text-success); }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle { width: 40px; height: 22px; border-radius: 11px; background: var(--color-border-secondary); cursor: pointer; position: relative; border: none; transition: background 0.2s; }
+  .toggle.on { background: #1D9E75; }
+  .toggle::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: white; top: 3px; left: 3px; transition: left 0.2s; }
+  .toggle.on::after { left: 21px; }
+  .mode-badge { font-size: 11px; padding: 3px 8px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); color: var(--color-text-secondary); margin-left: 8px; }
+  .submit-btn { width: 100%; padding: 12px; border-radius: var(--border-radius-md); background: #1D9E75; border: none; color: white; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 1rem; }
+  .submit-btn:active { opacity: 0.9; }
+  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .metric-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+  .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .metric-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .chart-wrap { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+  .chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .bar-label { font-size: 12px; color: var(--color-text-secondary); width: 30px; text-align: right; }
+  .bar-track { flex: 1; height: 18px; background: var(--color-background-secondary); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+  .insight-card { background: var(--color-background-info); border: 0.5px solid var(--color-border-info); border-radius: var(--border-radius-lg); padding: 0.875rem 1.25rem; margin-bottom: 10px; }
+  .insight-title { font-size: 13px; font-weight: 500; color: var(--color-text-info); margin-bottom: 4px; }
+  .insight-body { font-size: 13px; color: var(--color-text-info); opacity: 0.85; line-height: 1.5; }
+  .water-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .water-btn { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; cursor: pointer; color: var(--color-text-primary); }
+  .water-btn.selected { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); }
+  .fiber-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .fiber-btn { padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; font-size: 13px; cursor: pointer; color: var(--color-text-primary); }
+  .fiber-btn.selected { background: var(--color-background-success); border-color: var(--color-border-success); color: var(--color-text-success); }
+  .streak-row { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .streak-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--color-text-secondary); }
+  .streak-dot.done { background: #1D9E75; border-color: #1D9E75; color: white; }
+  .streak-dot.today { border: 2px solid #1D9E75; color: var(--color-text-primary); font-weight: 500; }
+</style>
+
+<div class="tracker">
+  <h2 class="sr-only">Symptom tracker for chronic constipation and hemorrhoids</h2>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+    <div>
+      <div style="font-size:18px; font-weight:500; color:var(--color-text-primary);">Daily log</div>
+      <div style="font-size:13px; color:var(--color-text-secondary);">Saturday, May 30</div>
+    </div>
+    <div class="streak-row">
+      <div class="streak-dot done">M</div>
+      <div class="streak-dot done">T</div>
+      <div class="streak-dot done">W</div>
+      <div class="streak-dot done">T</div>
+      <div class="streak-dot done">F</div>
+      <div class="streak-dot today">S</div>
+      <div class="streak-dot">S</div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('log')">Log today</button>
+    <button class="tab" onclick="switchTab('trends')">Trends</button>
+    <button class="tab" onclick="switchTab('settings')">Tracking mode</button>
+  </div>
+
+  <div id="view-log" class="view active">
+
+    <div class="section-label">Bowel movements today</div>
+    <div class="card">
+      <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">How many times?</div>
+      <div class="scale-row" id="freq-row">
+        <button class="scale-btn" onclick="select('freq', this)">0</button>
+        <button class="scale-btn" onclick="select('freq', this)">1</button>
+        <button class="scale-btn" onclick="select('freq', this)">2</button>
+        <button class="scale-btn" onclick="select('freq', this)">3+</button>
+      </div>
+    </div>
+
+    <div class="section-label">Stool type <span style="font-weight:400; color:var(--color-text-secondary);">(Bristol scale)</span></div>
+    <div class="card">
+      <div class="stool-row" id="stool-row">
+        <button class="stool-btn" onclick="select('stool', this)">1 — hard lumps</button>
+        <button class="stool-btn" onclick="select('stool', this)">2 — lumpy sausage</button>
+        <button class="stool-btn" onclick="select('stool', this)">3 — cracked sausage</button>
+        <button class="stool-btn" onclick="select('stool', this)">4 — smooth (ideal)</button>
+        <button class="stool-btn" onclick="select('stool', this)">5 — soft blobs</button>
+        <button class="stool-btn" onclick="select('stool', this)">6 — mushy</button>
+        <button class="stool-btn" onclick="select('stool', this)">7 — watery</button>
+      </div>
+    </div>
+
+    <div class="section-label">Straining & discomfort</div>
+    <div class="card">
+      <div style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">Straining effort (0 = none, 5 = severe)</div>
+      <div class="scale-row" id="strain-row">
+        <button class="scale-btn" onclick="select('strain', this)">0</button>
+        <button class="scale-btn" onclick="select('strain', this)">1</button>
+        <button class="scale-btn" onclick="select('strain', this)">2</button>
+        <button class="scale-btn" onclick="select('strain', this)">3</button>
+        <button class="scale-btn" onclick="select('strain', this)">4</button>
+        <button class="scale-btn" onclick="select('strain', this)">5</button>
+      </div>
+      <div style="font-size:13px; color:var(--color-text-secondary); margin: 12px 0 8px;">Pain or bleeding?</div>
+      <div class="scale-row" id="pain-row">
+        <button class="stool-btn" onclick="select('pain', this)">No pain</button>
+        <button class="stool-btn" onclick="select('pain', this)">Mild discomfort</button>
+        <button class="stool-btn" onclick="select('pain', this)">Moderate pain</button>
+        <button class="stool-btn" onclick="select('pain', this)">Bleeding noticed</button>
+      </div>
+    </div>
+
+    <div id="extra-sections"></div>
+
+    <button class="submit-btn" onclick="submitLog()">Save today's log <i class="ti ti-check" aria-hidden="true"></i></button>
+  </div>
+
+  <div id="view-trends" class="view">
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Avg straining</div>
+        <div class="metric-value">2.1</div>
+        <div class="metric-sub">↓ from 3.4</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Avg frequency</div>
+        <div class="metric-value">1.2</div>
+        <div class="metric-sub">per day, 7d</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Days logged</div>
+        <div class="metric-value">5/7</div>
+        <div class="metric-sub">this week</div>
+      </div>
+    </div>
+
+    <div class="insight-card">
+      <div class="insight-title"><i class="ti ti-bulb" aria-hidden="true" style="font-size:14px; margin-right:4px;"></i>Pattern noticed</div>
+      <div class="insight-body">Your worst straining days (4–5) followed days with low water intake. Try hitting your water goal 2 days in a row and see if it helps.</div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Straining score — last 7 days</div>
+      <div id="strain-chart"></div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Stool type — last 7 days</div>
+      <div id="stool-chart"></div>
+    </div>
+  </div>
+
+  <div id="view-settings" class="view">
+    <div style="font-size:14px; color:var(--color-text-secondary); margin-bottom:1rem; line-height:1.6;">Choose what you want to track each day. Start simple — you can always add more later.</div>
+
+    <div class="card">
+      <div class="toggle-row">
+        <div>
+          <div style="font-size:14px; font-weight:500; color:var(--color-text-primary);">Core symptoms <span class="mode-badge">always on</span></div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Frequency, stool type, straining, pain</div>
+        </div>
+        <button class="toggle on" aria-label="Core symptoms toggle" disabled></button>
+      </div>
+      <div class="toggle-row" onclick="toggleMode('water')">
+        <div>
+          <div style="font-size:14px; font-weight:500; color:var(--color-text-primary);">Water intake</div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Daily glasses of water</div>
+        </div>
+        <button class="toggle" id="toggle-water" aria-label="Water intake toggle"></button>
+      </div>
+      <div class="toggle-row" onclick="toggleMode('fiber')">
+        <div>
+          <div style="font-size:14px; font-weight:500; color:var(--color-text-primary);">Fiber intake</div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Did you eat fruits, veg, grains, or beans?</div>
+        </div>
+        <button class="toggle" id="toggle-fiber" aria-label="Fiber intake toggle"></button>
+      </div>
+      <div class="toggle-row" onclick="toggleMode('movement')">
+        <div>
+          <div style="font-size:14px; font-weight:500; color:var(--color-text-primary);">Physical movement</div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Were you active today?</div>
+        </div>
+        <button class="toggle" id="toggle-movement" aria-label="Movement toggle"></button>
+      </div>
+      <div class="toggle-row" onclick="toggleMode('mood')">
+        <div>
+          <div style="font-size:14px; font-weight:500; color:var(--color-text-primary);">Mood & stress</div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Stress levels and general mood</div>
+        </div>
+        <button class="toggle" id="toggle-mood" aria-label="Mood toggle"></button>
+      </div>
+    </div>
+
+    <div style="font-size:12px; color:var(--color-text-secondary); margin-top:0.5rem; line-height:1.6;">Changes apply to your next daily log.</div>
+  </div>
+</div>
+
+<script>
+const modes = { water: false, fiber: false, movement: false, mood: false };
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('view-' + tab).classList.add('active');
+  if (tab === 'trends') renderCharts();
+}
+
+function select(group, btn) {
+  const parent = btn.closest('.card, [id$="-row"]');
+  const row = btn.parentElement;
+  row.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function toggleMode(mode) {
+  modes[mode] = !modes[mode];
+  document.getElementById('toggle-' + mode).classList.toggle('on', modes[mode]);
+  renderExtras();
+}
+
+function renderExtras() {
+  const el = document.getElementById('extra-sections');
+  let html = '';
+  if (modes.water) {
+    html += `<div class="section-label">Water intake</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">Glasses of water today</div>
+      <div class="water-row" id="water-row">
+        ${['0–2','3–4','5–6','7–8','8+'].map(v => `<button class="water-btn" onclick="select('water',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (modes.fiber) {
+    html += `<div class="section-label">Fiber foods today</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">Select all that apply</div>
+      <div class="fiber-row">
+        ${['Fruits','Vegetables','Whole grains','Beans / lentils','Nuts / seeds','Psyllium / supplement'].map(v => `<button class="fiber-btn" onclick="this.classList.toggle('selected')">${v}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (modes.movement) {
+    html += `<div class="section-label">Movement</div>
+    <div class="card">
+      <div class="stool-row" id="move-row">
+        ${['Mostly sedentary','Light walk','Moderate exercise','Intense exercise'].map(v => `<button class="stool-btn" onclick="select('move',this)">${v}</button>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (modes.mood) {
+    html += `<div class="section-label">Stress level today</div>
+    <div class="card">
+      <div class="scale-row" id="mood-row">
+        ${['1','2','3','4','5'].map(v => `<button class="scale-btn" onclick="select('mood',this)">${v}</button>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-text-secondary);margin-top:6px;"><span>low stress</span><span>high stress</span></div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function submitLog() {
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Saved! ✓';
+  btn.style.background = '#0F6E56';
+  setTimeout(() => {
+    btn.innerHTML = 'Save today\'s log <i class="ti ti-check" aria-hidden="true"></i>';
+    btn.style.background = '#1D9E75';
+  }, 2000);
+}
+
+function renderCharts() {
+  const strainData = [4,3,2,4,1,2,null];
+  const stoolData = [2,3,3,2,4,4,null];
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const colors = ['#E24B4A','#E24B4A','#EF9F27','#E24B4A','#1D9E75','#EF9F27',''];
+
+  let sc = '';
+  strainData.forEach((v, i) => {
+    if (v === null) return;
+    const pct = Math.round((v / 5) * 100);
+    sc += `<div class="bar-row"><div class="bar-label">${days[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[i]};"></div></div><div style="font-size:12px;color:var(--color-text-secondary);width:16px;">${v}</div></div>`;
+  });
+  document.getElementById('strain-chart').innerHTML = sc;
+
+  let stc = '';
+  stoolData.forEach((v, i) => {
+    if (v === null) return;
+    const pct = Math.round((v / 7) * 100);
+    const c = v === 4 ? '#1D9E75' : v === 3 ? '#EF9F27' : '#E24B4A';
+    stc += `<div class="bar-row"><div class="bar-label">${days[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c};"></div></div><div style="font-size:12px;color:var(--color-text-secondary);width:16px;">T${v}</div></div>`;
+  });
+  document.getElementById('stool-chart').innerHTML = stc;
+}
+</script>
