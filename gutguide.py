@@ -61,3 +61,44 @@ st.plotly_chart(fig, width='stretch')
 # Display raw data option for validation
 if st.checkbox("Show raw logs table"):
     st.dataframe(df)
+
+# --- Physician Report Generator ---
+st.write("---")
+st.subheader("🧾 Physician Report")
+
+start_date = df["Date"].min()
+end_date = df["Date"].max()
+
+avg_water = round(df["Water_Oz"].mean(), 1)
+avg_steps = int(df["Steps"].mean())
+avg_pain = round(df["Pain_Scale"].mean(), 1)
+
+max_pain_row = df.loc[df["Pain_Scale"].idxmax()]
+min_water_row = df.loc[df["Water_Oz"].idxmin()]
+
+report_text = f"""
+Hemorrhoid Symptom Summary
+Date range: {start_date} to {end_date}
+
+Tracked metrics:
+- Average water intake: {avg_water} oz/day
+- Average steps: {avg_steps:,}/day
+- Average pain score: {avg_pain} / 10
+
+Notable days:
+- Highest pain: {int(max_pain_row['Pain_Scale'])} / 10 on {max_pain_row['Date']}
+- Lowest water intake: {int(min_water_row['Water_Oz'])} oz on {min_water_row['Date']}
+
+Clinical note:
+- This is a patient-generated symptom summary for review.
+- Persistent bleeding, worsening pain, or poor response to home care should be discussed with the clinician.
+""".strip()
+
+st.text_area("Physician Summary", report_text, height=220)
+
+st.download_button(
+    label="Download Physician Report (.txt)",
+    data=report_text,
+    file_name="hemorrhoid_physician_report.txt",
+    mime="text/plain",
+)
