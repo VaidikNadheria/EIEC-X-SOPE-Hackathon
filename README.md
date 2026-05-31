@@ -2,6 +2,10 @@
 
 Educational self-care support for people tracking hemorrhoid-like discomfort, constipation habits, and daily routines.
 
+## Demo
+
+Watch the demo video: [GutGuide Demo](assets/demo.mp4)
+
 ## Problem
 
 Patients with rectal discomfort, constipation, bleeding, or straining often need a simple way to understand which symptoms require medical attention and which daily habits may be contributing.
