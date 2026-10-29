@@ -283,6 +283,10 @@ def render_lifestyle_tracker():
         st.session_state.lifestyle_data = pd.concat(
             [st.session_state.lifestyle_data, new_entry], ignore_index=True
         )
+        # Daily totals replace the previous day's entry in both tracker tables.
+        st.session_state.fiber_log = st.session_state.fiber_log[
+            st.session_state.fiber_log["Date"] != log_date
+        ]
         if food_note or fiber:
             fiber_entry = pd.DataFrame(
                 {
@@ -310,7 +314,7 @@ def render_lifestyle_tracker():
     col4.metric("Latest Fiber", f"{df['Total_Fiber_g'].iloc[-1]:.1f} g")
 
     st.divider()
-    st.subheader("📈 Interactive Diagnostic & Lifestyle Trends")
+    st.subheader("📈 Interactive Symptom & Lifestyle Trends")
     df_melted = df.melt(
         id_vars=["Date"],
         value_vars=[
@@ -568,7 +572,7 @@ def render_results(result: dict):
 
     st.subheader("AI Summary")
     if has_gemini_key():
-        st.caption(f"Generated with Gemini using `{GEMINI_MODEL}`. Rule-based safety status remains the source of truth.")
+        st.caption(f"Gemini model: `{GEMINI_MODEL}`. If the request fails, a built-in summary is shown. Safety status is rule-based.")
     else:
         st.caption("No Gemini key found, so GutGuide is showing a non-AI fallback summary.")
     st.markdown(result["ai_summary"])
