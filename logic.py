@@ -176,9 +176,8 @@ def generate_rule_based_plan(answers: dict, factors: list[str]) -> list[str]:
     if _pain_level(answers) > 0 or _as_bool(answers.get("itching_burning", False)):
         add("Try a warm sitz bath for 10-15 minutes for comfort.")
 
-    add("Keep a simple 7-day log of bowel movements, pain, bleeding, water, fiber, and walking.")
-    add(
-        "Seek medical care for bleeding, severe pain, black or tarry stool, fever, vomiting, unexplained weight loss, or persistent symptoms."
-    )
-
-    return recommendations[:8]
+    # Reserve space so a long personalized list cannot remove the care reminder.
+    return recommendations[:6] + [
+        "Keep a simple 7-day log of bowel movements, pain, bleeding, water, fiber, and walking.",
+        "Seek medical care for bleeding, severe pain, black or tarry stool, fever, vomiting, unexplained weight loss, or persistent symptoms.",
+    ]
